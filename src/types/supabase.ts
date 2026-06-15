@@ -1,0 +1,8 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./database";
+
+export type AppSupabaseClient = SupabaseClient<
+  Database,
+  "public",
+  "public"
+>;
