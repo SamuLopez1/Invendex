@@ -70,3 +70,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 npm install
 npm run dev
 ```
+
+## Datos Demo
+
+Despues de crear al menos un usuario en Supabase Authentication, puedes cargar productos, movimientos y dos ventas de prueba desde:
+
+```text
+supabase/seed_dummy_data.sql
+```
+
+Pegalo en Supabase SQL Editor y ejecutalo. El seed es idempotente: si lo corres de nuevo no deberia duplicar los productos ni las ventas demo.
