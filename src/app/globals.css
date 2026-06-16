@@ -1,10 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  background: #faf8f3;
+  color-scheme: dark;
+  background: #09090b;
 }
 
 * {
@@ -13,8 +15,9 @@
 
 body {
   min-height: 100vh;
-  background: #faf8f3;
-  color: #151515;
+  background: #09090b;
+  color: #f4f4f5;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 button,
@@ -25,5 +28,46 @@ textarea {
 }
 
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-paper;
+  @apply focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-[#09090b];
+}
+
+@layer components {
+  .field-dark {
+    @apply focus-ring w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 transition-colors focus:border-cyan-500;
+  }
+}
+
+.font-display {
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c0c0e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
 }

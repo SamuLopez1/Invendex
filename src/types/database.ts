@@ -58,6 +58,7 @@ export interface Database {
           min_stock: number;
           purchase_price: number;
           sale_price: number;
+          image_url: string | null;
           is_active: boolean;
           created_at: string;
           updated_at: string;
@@ -70,6 +71,7 @@ export interface Database {
           min_stock?: number;
           purchase_price: number;
           sale_price: number;
+          image_url?: string | null;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -80,6 +82,7 @@ export interface Database {
           min_stock?: number;
           purchase_price?: number;
           sale_price?: number;
+          image_url?: string | null;
           is_active?: boolean;
           updated_at?: string;
         };

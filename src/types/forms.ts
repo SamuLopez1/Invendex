@@ -6,6 +6,7 @@ export interface ProductFormInput {
   min_stock: number;
   purchase_price: number;
   sale_price: number;
+  image_url?: string | null;
   is_active?: boolean;
 }
 

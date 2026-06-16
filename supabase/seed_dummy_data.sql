@@ -1,9 +1,6 @@
 do $$
 declare
   v_user_id uuid;
-  v_sale_id uuid;
-  v_total_amount numeric(12, 2);
-  v_total_cost numeric(12, 2);
 begin
   select id
   into v_user_id
@@ -15,9 +12,7 @@ begin
     raise exception 'Crea al menos un usuario en Authentication > Users antes de correr este seed.';
   end if;
 
-  insert into public.products (name, category, stock, min_stock, purchase_price, sale_price)
-  select *
-  from (
+  with seed_products(name, category, stock, min_stock, purchase_price, sale_price) as (
     values
       ('Aguardiente Antioqueno 750ml', 'Aguardiente', 12, 4, 32000, 55000),
       ('Ron Medellin 750ml', 'Ron', 8, 3, 42000, 75000),
@@ -31,12 +26,50 @@ begin
       ('Coca-Cola 1.5L', 'Mezcladores', 6, 4, 3500, 9000),
       ('Limon unidad', 'Insumos', 10, 12, 250, 1000),
       ('Hielo bolsa 5kg', 'Insumos', 2, 5, 4500, 10000)
-  ) as seed_products(name, category, stock, min_stock, purchase_price, sale_price)
+  )
+  insert into public.products (
+    name,
+    category,
+    stock,
+    min_stock,
+    purchase_price,
+    sale_price
+  )
+  select
+    seed_products.name,
+    seed_products.category,
+    seed_products.stock,
+    seed_products.min_stock,
+    seed_products.purchase_price,
+    seed_products.sale_price
+  from seed_products
   where not exists (
     select 1
     from public.products
     where products.name = seed_products.name
   );
+
+  with demo_products(name, stock) as (
+    values
+      ('Aguardiente Antioqueno 750ml', 12),
+      ('Ron Medellin 750ml', 8),
+      ('Whisky Old Parr 750ml', 3),
+      ('Cerveza Club Colombia 330ml', 48),
+      ('Cerveza Poker 330ml', 60),
+      ('Vodka Absolut 700ml', 5),
+      ('Tequila Jose Cuervo 750ml', 4),
+      ('Red Bull 250ml', 20),
+      ('Agua botella 600ml', 24),
+      ('Coca-Cola 1.5L', 6),
+      ('Limon unidad', 10),
+      ('Hielo bolsa 5kg', 2)
+  )
+  update public.products
+  set
+    stock = demo_products.stock,
+    is_active = true
+  from demo_products
+  where products.name = demo_products.name;
 
   insert into public.inventory_movements (
     product_id,
@@ -66,212 +99,11 @@ begin
     'Limon unidad',
     'Hielo bolsa 5kg'
   )
-  and products.stock > 0
   and not exists (
     select 1
     from public.inventory_movements
     where inventory_movements.product_id = products.id
       and inventory_movements.reason = 'Carga inicial demo'
   );
-
-  if not exists (
-    select 1
-    from public.inventory_movements
-    where reason = 'Venta demo seed - caja 1'
-  ) then
-    with items(product_name, quantity) as (
-      values
-        ('Cerveza Poker 330ml', 8),
-        ('Cerveza Club Colombia 330ml', 6),
-        ('Aguardiente Antioqueno 750ml', 2),
-        ('Red Bull 250ml', 4)
-    )
-    select
-      sum(products.sale_price * items.quantity),
-      sum(products.purchase_price * items.quantity)
-    into v_total_amount, v_total_cost
-    from items
-    join public.products on products.name = items.product_name;
-
-    insert into public.sales (
-      payment_method,
-      total_amount,
-      total_cost,
-      gross_profit,
-      created_by
-    )
-    values (
-      'cash',
-      v_total_amount,
-      v_total_cost,
-      v_total_amount - v_total_cost,
-      v_user_id
-    )
-    returning id into v_sale_id;
-
-    with items(product_name, quantity) as (
-      values
-        ('Cerveza Poker 330ml', 8),
-        ('Cerveza Club Colombia 330ml', 6),
-        ('Aguardiente Antioqueno 750ml', 2),
-        ('Red Bull 250ml', 4)
-    )
-    insert into public.sale_items (
-      sale_id,
-      product_id,
-      quantity,
-      unit_price,
-      unit_cost,
-      subtotal,
-      profit
-    )
-    select
-      v_sale_id,
-      products.id,
-      items.quantity,
-      products.sale_price,
-      products.purchase_price,
-      products.sale_price * items.quantity,
-      (products.sale_price - products.purchase_price) * items.quantity
-    from items
-    join public.products on products.name = items.product_name;
-
-    with items(product_name, quantity) as (
-      values
-        ('Cerveza Poker 330ml', 8),
-        ('Cerveza Club Colombia 330ml', 6),
-        ('Aguardiente Antioqueno 750ml', 2),
-        ('Red Bull 250ml', 4)
-    )
-    update public.products
-    set stock = products.stock - items.quantity
-    from items
-    where products.name = items.product_name;
-
-    with items(product_name, quantity) as (
-      values
-        ('Cerveza Poker 330ml', 8),
-        ('Cerveza Club Colombia 330ml', 6),
-        ('Aguardiente Antioqueno 750ml', 2),
-        ('Red Bull 250ml', 4)
-    )
-    insert into public.inventory_movements (
-      product_id,
-      movement_type,
-      quantity,
-      reason,
-      related_sale_id,
-      created_by
-    )
-    select
-      products.id,
-      'sale',
-      -items.quantity,
-      'Venta demo seed - caja 1',
-      v_sale_id,
-      v_user_id
-    from items
-    join public.products on products.name = items.product_name;
-  end if;
-
-  if not exists (
-    select 1
-    from public.inventory_movements
-    where reason = 'Venta demo seed - caja 2'
-  ) then
-    with items(product_name, quantity) as (
-      values
-        ('Ron Medellin 750ml', 1),
-        ('Agua botella 600ml', 3),
-        ('Coca-Cola 1.5L', 2),
-        ('Tequila Jose Cuervo 750ml', 1)
-    )
-    select
-      sum(products.sale_price * items.quantity),
-      sum(products.purchase_price * items.quantity)
-    into v_total_amount, v_total_cost
-    from items
-    join public.products on products.name = items.product_name;
-
-    insert into public.sales (
-      payment_method,
-      total_amount,
-      total_cost,
-      gross_profit,
-      created_by
-    )
-    values (
-      'nequi',
-      v_total_amount,
-      v_total_cost,
-      v_total_amount - v_total_cost,
-      v_user_id
-    )
-    returning id into v_sale_id;
-
-    with items(product_name, quantity) as (
-      values
-        ('Ron Medellin 750ml', 1),
-        ('Agua botella 600ml', 3),
-        ('Coca-Cola 1.5L', 2),
-        ('Tequila Jose Cuervo 750ml', 1)
-    )
-    insert into public.sale_items (
-      sale_id,
-      product_id,
-      quantity,
-      unit_price,
-      unit_cost,
-      subtotal,
-      profit
-    )
-    select
-      v_sale_id,
-      products.id,
-      items.quantity,
-      products.sale_price,
-      products.purchase_price,
-      products.sale_price * items.quantity,
-      (products.sale_price - products.purchase_price) * items.quantity
-    from items
-    join public.products on products.name = items.product_name;
-
-    with items(product_name, quantity) as (
-      values
-        ('Ron Medellin 750ml', 1),
-        ('Agua botella 600ml', 3),
-        ('Coca-Cola 1.5L', 2),
-        ('Tequila Jose Cuervo 750ml', 1)
-    )
-    update public.products
-    set stock = products.stock - items.quantity
-    from items
-    where products.name = items.product_name;
-
-    with items(product_name, quantity) as (
-      values
-        ('Ron Medellin 750ml', 1),
-        ('Agua botella 600ml', 3),
-        ('Coca-Cola 1.5L', 2),
-        ('Tequila Jose Cuervo 750ml', 1)
-    )
-    insert into public.inventory_movements (
-      product_id,
-      movement_type,
-      quantity,
-      reason,
-      related_sale_id,
-      created_by
-    )
-    select
-      products.id,
-      'sale',
-      -items.quantity,
-      'Venta demo seed - caja 2',
-      v_sale_id,
-      v_user_id
-    from items
-    join public.products on products.name = items.product_name;
-  end if;
 end;
 $$;

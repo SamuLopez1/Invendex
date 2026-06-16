@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Lock, Mail } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export function LoginForm() {
@@ -35,42 +36,44 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-ink" htmlFor="email">
-          Correo
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          className="focus-ring mt-1 h-12 w-full rounded-md border border-line bg-white px-3"
-        />
+        <div className="relative">
+          <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="Correo"
+            className="focus-ring block w-full rounded-xl border border-white/5 bg-black/40 py-3 pl-10 pr-4 text-xs text-white placeholder-zinc-600 transition-colors focus:border-blue-500"
+          />
+        </div>
       </div>
       <div>
-        <label className="text-sm font-medium text-ink" htmlFor="password">
-          Contrasena
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="focus-ring mt-1 h-12 w-full rounded-md border border-line bg-white px-3"
-        />
+        <div className="relative">
+          <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            placeholder="Contrasena"
+            className="focus-ring block w-full rounded-xl border border-white/5 bg-black/40 py-3 pl-10 pr-4 text-xs text-white placeholder-zinc-600 transition-colors focus:border-blue-500"
+          />
+        </div>
       </div>
       {error ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300">
           {error}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={loading}
-        className="focus-ring h-12 w-full rounded-md bg-brand-600 px-4 font-semibold text-white disabled:opacity-60"
+        className="focus-ring mt-6 h-12 w-full rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 text-xs font-black uppercase tracking-widest text-black shadow-lg shadow-blue-900/20 transition-transform active:scale-[0.98] disabled:opacity-60"
       >
-        {loading ? "Ingresando..." : "Ingresar"}
+        {loading ? "Autenticando..." : "Autenticar"}
       </button>
     </form>
   );

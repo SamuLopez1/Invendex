@@ -73,10 +73,16 @@ npm run dev
 
 ## Datos Demo
 
-Despues de crear al menos un usuario en Supabase Authentication, puedes cargar productos, movimientos y dos ventas de prueba desde:
+Despues de crear al menos un usuario en Supabase Authentication, puedes cargar productos y stock de prueba desde:
 
 ```text
 supabase/seed_dummy_data.sql
 ```
 
-Pegalo en Supabase SQL Editor y ejecutalo. El seed es idempotente: si lo corres de nuevo no deberia duplicar los productos ni las ventas demo.
+Pegalo en Supabase SQL Editor y ejecutalo. El seed es idempotente: si lo corres de nuevo no deberia duplicar los productos.
+
+Si ya habias corrido una version anterior del seed con ventas demo, puedes limpiar esas ventas y restaurar el stock con:
+
+```text
+supabase/reset_demo_sales.sql
+```

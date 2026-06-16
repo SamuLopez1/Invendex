@@ -75,6 +75,7 @@ export async function createProduct(
       min_stock: input.min_stock,
       purchase_price: input.purchase_price,
       sale_price: input.sale_price,
+      image_url: input.image_url?.trim() || null,
       is_active: input.is_active ?? true
     })
     .select()
@@ -97,6 +98,7 @@ export async function updateProduct(
       min_stock: input.min_stock,
       purchase_price: input.purchase_price,
       sale_price: input.sale_price,
+      image_url: input.image_url?.trim() || null,
       is_active: input.is_active ?? true
     })
     .eq("id", id)

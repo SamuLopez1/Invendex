@@ -28,6 +28,7 @@ export async function createProductAction(formData: FormData) {
     min_stock: numberFromForm(formData.get("min_stock")),
     purchase_price: numberFromForm(formData.get("purchase_price")),
     sale_price: numberFromForm(formData.get("sale_price")),
+    image_url: String(formData.get("image_url") ?? ""),
     stock: 0
   });
 
@@ -45,6 +46,7 @@ export async function updateProductAction(formData: FormData) {
     min_stock: numberFromForm(formData.get("min_stock")),
     purchase_price: numberFromForm(formData.get("purchase_price")),
     sale_price: numberFromForm(formData.get("sale_price")),
+    image_url: String(formData.get("image_url") ?? ""),
     is_active: formData.get("is_active") === "on"
   });
 

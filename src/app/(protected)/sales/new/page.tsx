@@ -13,11 +13,14 @@ export default async function NewSalePage({
   const products = await listProducts(supabase);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 bg-[#09090b] p-4 md:p-6">
       <Notice message={params.message} />
       <div>
-        <h2 className="text-2xl font-bold">Registrar venta</h2>
-        <p className="text-sm text-neutral-600">
+        <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-white">
+          <span className="h-2 w-2 rounded-full bg-cyan-500" />
+          Registrar venta
+        </h2>
+        <p className="mt-1 text-xs text-zinc-500">
           Busca, agrega cantidades y confirma en una sola pantalla.
         </p>
       </div>
